@@ -26,7 +26,7 @@ the following conditions are met:
    in the documentation and/or other materials provided with the distribution.
 
 4. Products derived from the Software must include an acknowledgment that
-   they are derived from Nette Framework in their documentation and/or other
+   they are derived from "Phpmodbus" in their documentation and/or other
    materials provided with the distribution.
 
 5. The name "Phpmodbus" must not be used to endorse or promote products
