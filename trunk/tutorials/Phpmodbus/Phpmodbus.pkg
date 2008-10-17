@@ -1,0 +1,100 @@
+<refentry id="{@id}">
+ <refnamediv>
+  <refname>Phpmodbus user's guide</refname>
+  <refpurpose>Phpmodbus How-to</refpurpose>
+ </refnamediv>
+ <refsynopsisdiv>
+  <author>
+   Jan Krakora
+   <authorblurb>
+    {@link mailto:jak.krakora@wago.com Jan Krakora}
+   </authorblurb>
+  </author>
+ </refsynopsisdiv>
+ {@toc}
+ <refsect1 id="{@id intro}">
+  <title>Introduction</title>
+  <para>
+   Phpmodbus is a simple PHP library for Modbus funcionality. Currently the library implements 
+   Modbus master using UDP and IEC-1131 data types conversion functionality. 
+  </para>
+  <para>
+   Implemented MODBUS features:
+   <itemizedlist>
+     <listitem><para>FC  3: read multiple registers</para></listitem>
+     <listitem><para>FC 16: write multiple registers</para></listitem>
+     <listitem><para>FC 23: read write registers</para></listitem>
+    </itemizedlist>
+  </para>
+  <para>
+   For more about Modbus see [{@link http://www.modbus.org}] or 
+   [{@link http://en.wikipedia.org/wiki/Modbus Wiki}]
+   </para>
+  <para>
+   For more about IEC-1131 data types see {@link http://books.google.com/books}
+  </para>  
+  <note>
+   Developed bellow strong wings of <graphic fileref="wago_logo.png"/> {@link http://www.wago.com}.  
+  </note>
+ </refsect1>
+ <refsect1 id="{@id intro}">
+  <title>Installation</title>
+  <para>
+   We suppose you have already installed any Apache+PHP solution. 
+   Copy Phpmodbus library directory to your PHP project folder. 
+   In a script link the PHP library via 
+     <programlisting role="ini">
+      <![CDATA[ require_once './Phpmodbus/ModbusMasterUdp.php'; ]]>
+     </programlisting>
+  For more see examples bellow.
+  </para>
+ </refsect1>
+ <refsect1 id="{@id examples}">
+  <title>Examples</title>
+  <para>
+    This section presents library features and examples
+  </para>
+  <refsect2 id="{@id example_fc3}">
+    <title>FC3 - read mutliple registers</title>
+    <para>
+      FC3 functionality example
+    </para>
+    <para>
+    {@example example_fc3.php}
+    </para>
+  </refsect2>
+  <refsect2 id="{@id example_fc16}">
+    <title>FC16 - write mutliple registers</title>
+    <para>
+      FC16 functionality example
+    </para>
+    <para>
+    {@example example_fc16.php}
+    </para>
+  </refsect2>
+  <refsect2 id="{@id example_fc23}">
+    <title>FC23 - read write registers</title>
+    <para>
+      FC23 functionality example
+    </para>
+    <para>
+    {@example example_fc23.php}
+    </para>
+  </refsect2>
+  <refsect2 id="{@id wago_example}">
+    <title>Dump of M-memory from WAGO 750-84x series coupler.</title>
+    <para>
+      Dump of M-memory from WAGO 750-84x series coupler.
+    </para>
+    <para>
+    {@example example_750841_Mmemory.php}
+    </para>
+  </refsect2>
+  <refsect2 id="{@id example_fc23}">
+    <title>IEC functionality</title>    
+    <para>
+    {@example example_iec.php}
+    </para>
+  </refsect2>
+ </refsect1> 
+</refentry>
