@@ -1,0 +1,81 @@
+#FAQs, additional comments
+
+= Introduction =
+
+This page shows the most asked problems and their solutions.
+
+
+== Q1: Real values ==
+
+I can not get it to work with REAL. Do you have any examples to communicate with real-variables with Wago 750-841? For example with PLC data as follows?
+
+{{{
+VAR
+ TESTVAR1 AT %MD0 : REAL := 100;
+ TEST1 AT %MD2 : REAL := 101;
+ TEST2 AT %MD4 : REAL := 102;
+ TEST3 AT %MD6 : REAL := 103;
+END_VAR
+}}}
+(Codesys 2.3 code excerpt)
+
+== A1: Real values ==
+
+If you would like to operate with the variables
+
+{{{
+VAR
+ TESTVAR1 AT %MD0 : REAL := 100;
+ TEST1 AT %MD2 : REAL := 101;
+ TEST2 AT %MD4 : REAL := 102;
+ TEST3 AT %MD6 : REAL := 103;
+END_VAR
+}}}
+
+OK, but I am not sure if you know that your addressing over-jumps 
+the real values at MD1, MD3 and MD5 memory area of PLC!!! When 
+you use e.g.
+ 
+{{{
+// Data to be written
+$data = array(1000, 2000, 1.250, 1.250);
+$dataTypes = array("REAL", "REAL", "REAL", "REAL");
+// e.g. FC23
+$recData = $modbus->readWriteRegisters(0, 12288, 6, 12288, $data, $dataTypes);
+}}}
+
+the data will be stored word-by-word into the defined PLC 
+memory (DWORD == 2xWORDS == 4xBYTES), i.e. from MD0 to MD3. The MD0 and MD2 
+data in debug mode will not be visible when not used!!!
+ 
+To change the addressing, use either
+
+{{{
+VAR
+ TESTVAR1 AT %MD0 : REAL := 100;
+ TEST1 AT %MD1 : REAL := 101;
+ TEST2 AT %MD2 : REAL := 102;
+ TEST3 AT %MD3 : REAL := 103; 
+END_VAR
+}}}
+
+or
+
+{{{
+VAR
+ TESTVAR1 AT %MW0 : REAL := 100;
+ TEST1 AT %MW2 : REAL := 101;
+ TEST2 AT %MW4 : REAL := 102;
+ TEST3 AT %MW6 : REAL := 103; 
+END_VAR
+}}}
+
+or, if you adhere on this addressing, you should send the modbus request as follows
+
+{{{
+// Data to be written
+$data = array(1000, 0, 2000, 0, 1.250, 0, 1.250);
+$dataTypes = array("REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL");
+// e.g. FC23
+$recData = $modbus->readWriteRegisters(0, 12288, 6, 12288, $data, $dataTypes);
+}}}
