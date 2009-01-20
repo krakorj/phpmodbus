@@ -79,3 +79,64 @@ $dataTypes = array("REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL");
 // e.g. FC23
 $recData = $modbus->readWriteRegisters(0, 12288, 6, 12288, $data, $dataTypes);
 }}}
+
+== Q2: Real-to-float on server side ==
+
+How shall I do if I want to read and show the real values on the php side.
+
+== A2: Real values ==
+
+Use the following function
+
+{{{
+/**
+ * The function converts array of 4 bytes to float value. The conversion result 
+ * is based on the IEC Real value included in the byte set. The return value 
+ * depends on order of the bytes (endianning).
+ *   
+ */ 
+function bytes2float($values, $endianness = 0){
+    $real = 0;
+    // Combine bytes
+    if ($endianness == 0)
+      $real = (($values[3] & 0xFF)<<16) | 
+        (($values[2] & 0xFF)<<24) | 
+        (($values[1] & 0xFF)) | 
+        (($values[0] & 0xFF)<<8);
+    else
+      $real = (($values[3] & 0xFF)<<24) | 
+        (($values[2] & 0xFF)<<16) | 
+        (($values[1] & 0xFF)<<8) | 
+        (($values[0] & 0xFF));
+    // Convert the real value to float    
+    return IecType::iecReal2float($real);
+}
+}}}
+
+An example of use:
+
+{{{
+// Received bytes interpreting 3 REAL values (6 words)
+$data = array(
+  0 => 0,
+  1 => 0,
+  2 => 68,
+  3 => 122,
+  4 => 0,
+  5 => 0,
+  6 => 68,
+  7 => 250,
+  8 => 0,
+  9 => 0,
+  10 => 63,
+  11 => 160,
+);
+
+// Chunk the array
+$dword = array_chunk($data, 4);
+
+// Print float interpretation of the real value 
+echo bytes2float($dword[0]) . "<br>";
+echo bytes2float($dword[1]) . "<br>";
+echo bytes2float($dword[2]) . "<br>";
+}}}
