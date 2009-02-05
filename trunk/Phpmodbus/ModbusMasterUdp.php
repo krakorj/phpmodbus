@@ -1,12 +1,12 @@
 <?php
 /**
- * Phpmodbus Copyright (c) 2004, 2008 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)
+ * Phpmodbus Copyright (c) 2004, 2009 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)
  *  
  * This source file is subject to the "PhpModbus license" that is bundled
  * with this package in the file license.txt.
  *   
  *
- * @copyright  Copyright (c) 2004, 2008 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)
+ * @copyright  Copyright (c) 2004, 2009 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)
  * @license PhpModbus license 
  * @category Phpmodbus
  * @tutorial Phpmodbus.pkg 
@@ -15,7 +15,8 @@
  *  
  */
 
-require_once dirname(__FILE__) . '/IecType.php'; 
+require_once dirname(__FILE__) . '/IecType.php';
+require_once dirname(__FILE__) . '/PhpType.php'; 
 
 /**
  * Modbus UDP master class
@@ -28,7 +29,7 @@ require_once dirname(__FILE__) . '/IecType.php';
  *   - FC 23: read write registers
  *   
  * @author Jan Krakora
- * @copyright  Copyright (c) 2004, 2008 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)  
+ * @copyright  Copyright (c) 2004, 2009 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)  
  * @package Phpmodbus  
  *
  */
@@ -39,7 +40,7 @@ class ModbusMasterUdp {
   var $errstr;
   var $status;
   var $timeout_sec = 5; // 5 sec
-  var $endianess = 0; // * defines endian codding (little endian == 0, big endian == 1) 
+  var $endianess = 0; // defines endian codding (little endian == 0, big endian == 1) 
   
   /**
    * Modbus
@@ -51,7 +52,12 @@ class ModbusMasterUdp {
   function ModbusMasterUdp($host){
     $this->host = $host;
   }
-  
+
+  /**
+   * Connect the socket
+   *
+   * @return bool
+   */
   private function connect(){
     // UDP socket
     $this->sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);    
@@ -66,17 +72,30 @@ class ModbusMasterUdp {
         return true;        
     }    
   }
-  
+
+  /**
+   * Disconnect the socket
+   */
   private function disconnect(){    
     socket_close($this->sock);
     $this->status .= "Disconnected</br>";
   }
-  
+
+  /**
+   * Send the packet via Modbus
+   *
+   * @param string $packet
+   */
   private function send($packet){
     socket_write($this->sock, $packet, strlen($packet));  
     $this->status .= "Send</br>";  
   }
 
+  /**
+   * Receive data from the socket
+   *
+   * @return bool
+   */
   private function rec(){
     socket_set_nonblock($this->sock);
     $readsocks[] = $this->sock;     
@@ -108,7 +127,12 @@ class ModbusMasterUdp {
     }
   } 
   
-  // check the Modbus response code
+  /**
+   * Check the Modbus response code
+   *
+   * @param string $packet
+   * @return bool
+   */
   private function responseCode($packet){    
     if(($packet[7] & 0x80) > 0) {
       $this->errstr .= "Modbus response error code:" . ord($packet[8]);
@@ -124,7 +148,7 @@ class ModbusMasterUdp {
   /**
    * Modbus function FC 3(0x03) - Read Multiple Registers. 
    * 
-   * This function reads {@link $quantity} of Bytes from reference 
+   * This function reads {@link $quantity} of Words (2 bytes) from reference 
    * {@link $referenceRead} of a memory of a Modbus device given by 
    * {@link $unitId}.
    *    
@@ -145,7 +169,8 @@ class ModbusMasterUdp {
     $this->status .= $this->printPacket($packet);    
     $this->send($packet);
     // receive response
-    if(!$rpacket = $this->rec())
+    $rpacket = $this->rec();
+    if(!$rpacket)
       return false;
     $this->status .= $this->printPacket($rpacket);
     // parse packet
@@ -159,8 +184,27 @@ class ModbusMasterUdp {
     return $receivedData;
   }
   
-  // packet FC 3 - read multiple registers
-  //      e.g.: 
+  /**
+   * Modbus function FC 3(0x03) - see @see readMultipleRegisters function.
+   *
+   * @param int $unitId
+   * @param int $reference
+   * @param int $quantity
+   * @return false|Array
+   */
+  function fc3($unitId, $reference, $quantity){
+    return $this->readMultipleRegisters($unitId, $reference, $quantity);
+  }
+
+  /**
+   *
+   * Packet FC 3 builder - read multiple registers
+   *
+   * @param int $unitId
+   * @param int $reference
+   * @param int $quantity
+   * @return string
+   */
   private function readMultipleRegistersPacketBuilder($unitId, $reference, $quantity){
     $dataLen = 0;
     // build body
@@ -180,7 +224,12 @@ class ModbusMasterUdp {
     return $buffer3. $buffer2. $buffer1;
   }
   
-  // FC 3 parser  
+  /**
+   * FC 3 response parser
+   *
+   * @param string $packet
+   * @return array
+   */
   private function readMultipleRegistersParser($packet){
     $data = array();
     // if not exception
@@ -203,7 +252,7 @@ class ModbusMasterUdp {
    * @param int $unitId usually ID of Modbus device 
    * @param int $reference Reference in the device memory (e.g. in device WAGO 750-841, memory MW0 starts at address 12288)
    * @param array $data Array of values to be written.
-   * @param array $dataTypes Array of types of values to be written. The array should consists of string "REAL", "INT", "DINT" and "BYTE".   
+   * @param array $dataTypes Array of types of values to be written. The array should consists of string "INT", "DINT" and "REAL".    
    * @return bool Success flag
    */       
   function writeMultipleRegister($unitId, $reference, $data, $dataTypes){
@@ -217,7 +266,8 @@ class ModbusMasterUdp {
     $this->status .= $this->printPacket($packet);    
     $this->send($packet);
     // receive response
-    if(!$rpacket = $this->rec())
+    $rpacket = $this->rec();
+    if(!$rpacket)
       return false;
     $this->status .= $this->printPacket($rpacket);    
     // parse packet
@@ -228,9 +278,33 @@ class ModbusMasterUdp {
     $this->status .= "writeMultipleRegister: DONE</br>";
     return true;
   }
-  
-  // packet FC16 - WRITE multiple register
-  //      e.g.: 4dd90000000d0010300000030603e807d00bb8
+
+
+  /**
+   * Modbus function FC16(0x10) - see @see writeMultipleRegister function.
+   *
+   * @param int $unitId
+   * @param int $reference
+   * @param array $data
+   * @param array $dataTypes
+   * @return bool
+   */
+  function fc16($unitId, $reference, $data, $dataTypes){    
+    return $this->writeMultipleRegister($unitId, $reference, $data, $dataTypes);
+  }
+
+
+  /**
+   *
+   * Packet builder FC16 - WRITE multiple register
+   *     e.g.: 4dd90000000d0010300000030603e807d00bb8
+   *
+   * @param int $unitId
+   * @param int $reference
+   * @param array $data
+   * @param array $dataTypes
+   * @return string
+   */
   private function writeMultipleRegisterPacketBuilder($unitId, $reference, $data, $dataTypes){
     $dataLen = 0;        
     // build data section
@@ -249,8 +323,8 @@ class ModbusMasterUdp {
         $dataLen += 4;
       }       
       else{
-        $buffer1 .= iecType::iecBYTE($dataitem);   // register values x
-        $dataLen += 1;
+        $buffer1 .= iecType::iecINT($dataitem);   // register values x
+        $dataLen += 2;
       }
     }
     // build body
@@ -271,7 +345,12 @@ class ModbusMasterUdp {
     return $buffer3. $buffer2. $buffer1;
   }
   
-  // FC16 parser
+  /**
+   * FC16 response parser
+   *
+   * @param string $packet
+   * @return bool
+   */
   private function writeMultipleRegisterParser($packet){
     if(!$this->responseCode($rpacket))
       return false;
@@ -283,7 +362,7 @@ class ModbusMasterUdp {
    * 
    * This function writes {@link $data} array at reference {@link $referenceWrite} 
    * position of memory of a Modbus device given by {@link $unitId}. Simultanously, 
-   * it returns {@link $quantity} of Bytes from reference {@link $referenceRead}.
+   * it returns {@link $quantity} of Words (2 bytes) from reference {@link $referenceRead}.
    *
    *
    * @param int $unitId usually ID of Modbus device 
@@ -291,7 +370,7 @@ class ModbusMasterUdp {
    * @param int $quantity Amounth of the data to be read from device.   
    * @param int $referenceWrite Reference in the device memory to write data.
    * @param array $data Array of values to be written.
-   * @param array $dataTypes Array of types of values to be written. The array should consists of string "REAL", "INT", "DINT" and "BYTE".   
+   * @param array $dataTypes Array of types of values to be written. The array should consists of string "INT", "DINT" and "REAL".   
    * @return false|Array Success flag or array of data.
    */
   function readWriteRegisters($unitId, $referenceRead, $quantity, $referenceWrite, $data, $dataTypes){
@@ -305,7 +384,8 @@ class ModbusMasterUdp {
     $this->status .= $this->printPacket($packet);    
     $this->send($packet);
     // receive response
-    if(!$rpacket = $this->rec())
+    $rpacket = $this->rec();
+    if(!$rpacket)
       return false;
     $this->status .= $this->printPacket($rpacket);
     // parse packet
@@ -319,8 +399,33 @@ class ModbusMasterUdp {
     return $receivedData;
   }
   
-  // packet FC23 - READ WRITE registers
-  //      e.g.: 
+  /**
+   * Modbus function FC23(0x17) - see @see readWriteRegisters
+   *
+   * @param int $unitId
+   * @param int $referenceRead
+   * @param int $quantity
+   * @param int $referenceWrite
+   * @param array $data
+   * @param array $dataTypes
+   * @return false|Array
+   */
+  function fc23($unitId, $referenceRead, $quantity, $referenceWrite, $data, $dataTypes){
+    return $this->readWriteRegisters($unitId, $referenceRead, $quantity, $referenceWrite, $data, $dataTypes);
+  }
+  
+  /**
+   * Packet FC23 builder - READ WRITE registers
+   *
+   *
+   * @param int $unitId
+   * @param int $referenceRead
+   * @param int $quantity
+   * @param int $referenceWrite
+   * @param array $data
+   * @param array $dataTypes
+   * @return string
+   */
   private function readWriteRegistersPacketBuilder($unitId, $referenceRead, $quantity, $referenceWrite, $data, $dataTypes){
     $dataLen = 0;        
     // build data section
@@ -339,8 +444,8 @@ class ModbusMasterUdp {
         $dataLen += 4;
       }       
       else{
-        $buffer1 .= iecType::iecBYTE($dataitem);   // register values x
-        $dataLen += 1;
+        $buffer1 .= iecType::iecINT($dataitem);   // register values x
+        $dataLen += 2;
       }
     }
     // build body
@@ -365,7 +470,13 @@ class ModbusMasterUdp {
     return $buffer3. $buffer2. $buffer1;
   }
   
-  // FC23 parser  
+
+  /**
+   * FC23 response parser
+   *
+   * @param string $packet
+   * @return array
+   */
   private function readWriteRegistersParser($packet){
     $data = array();
     // if not exception
@@ -377,13 +488,25 @@ class ModbusMasterUdp {
     }    
     return $data;
   }
-  
+
+  /**
+   * Parse data and get it to the Hex form
+   *
+   * @param char $value
+   * @return string
+   */
   private function byte2hex($value){
     $h = dechex(($value >> 4) & 0x0F);
     $l = dechex($value & 0x0F);
     return "$h$l";
   }
-  
+
+  /**
+   * Print whole packet in the hex form
+   *
+   * @param string $packet
+   * @return string
+   */
   private function printPacket($packet){
     $str = "";   
     $str .= "Packet: "; 
