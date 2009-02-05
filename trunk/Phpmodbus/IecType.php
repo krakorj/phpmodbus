@@ -1,12 +1,12 @@
 <?php
 /**
- * Phpmodbus Copyright (c) 2004, 2008 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)
+ * Phpmodbus Copyright (c) 2004, 2009 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)
  *  
  * This source file is subject to the "PhpModbus license" that is bundled
  * with this package in the file license.txt. 
  * 
  * @author Jan Krakora
- * @copyright Copyright (c) 2004, 2008 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)
+ * @copyright Copyright (c) 2004, 2009 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)
  * @license PhpModbus license 
  * @category Phpmodbus
  * @package Phpmodbus
@@ -20,7 +20,7 @@
  * data types into a IEC format and vice versa.
  *
  * @author Jan Krakora
- * @copyright  Copyright (c) 2004, 2008 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)      
+ * @copyright  Copyright (c) 2004, 2009 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)      
  * @package Phpmodbus  
  */
 class IecType {
@@ -62,44 +62,25 @@ class IecType {
    * @return value IEC-1131 INT data type
    *  
    */
-  function iecDINT($value, $endianness = 0){  
-    if ($endianness == 0)
-      return
-        self::iecBYTE(($value & 0x000000FF)) .
-        self::iecBYTE(($value >> 8) & 0x000000FF) .
-        self::iecBYTE(($value >> 24) & 0x000000FF) .
-        self::iecBYTE(($value >> 16) & 0x000000FF);
-    else
-      return
-        self::iecBYTE(($value >> 24) & 0x000000FF) .
-        self::iecBYTE(($value >> 16) & 0x000000FF) .
-        self::iecBYTE(($value >> 8) & 0x000000FF) .
-        self::iecBYTE(($value & 0x000000FF));
+  function iecDINT($value, $endianness = 0){
+    // result with right endianness
+    return self::Endianness($value, $endianness);
   }
   
   /**
    * iecREAL
    *  
-   * Converts a value to IEC-1131 REAL data type. The function uses @use function float2iecReal. 
+   * Converts a value to IEC-1131 REAL data type. The function uses function  @use float2iecReal. 
    * 
    * @param value value to be converted
    * @param value endianness defines endian codding (little endian == 0, big endian == 1) 
    * @return value IEC-1131 REAL data type
    */
   function iecREAL($value, $endianness = 0){
+    // iecREAL representation
     $real = self::float2iecReal($value);
-    if ($endianness == 0)
-      return
-        self::iecBYTE(($real & 0x000000FF)) .
-        self::iecBYTE(($real >> 8) & 0x000000FF) .
-        self::iecBYTE(($real >> 24) & 0x000000FF) .
-        self::iecBYTE(($real >> 16) & 0x000000FF);
-    else
-      return
-        self::iecBYTE(($real >> 24) & 0x000000FF) .
-        self::iecBYTE(($real >> 16) & 0x000000FF) .
-        self::iecBYTE(($real >> 8) & 0x000000FF) .
-        self::iecBYTE(($real & 0x000000FF));
+    // result with right endianness
+    return self::Endianness($real, $endianness);   
   }
   
   /**
@@ -113,7 +94,7 @@ class IecType {
    * @param float value to be converted
    * @return value IEC REAL data type 
    */   
-  function float2iecReal($value){
+  private function float2iecReal($value){
     $bias = 128;
   	$cnst = 281;		// 1 (carry bit) + 127 + 1 + 126 + 24 + 2 (round bits)
   	$two_power_x = array(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 
@@ -168,44 +149,28 @@ class IecType {
   }
   
   /**
-   * iecReal2float
-   *  
-   * This function converts a value in IEC-1131 REAL single precision form to float.
-   *  
-   * For more see [{@link http://en.wikipedia.org/wiki/Single_precision Single precision on Wiki}] or
-   * [{@link http://de.php.net/manual/en/function.base-convert.php PHP base_convert function commentary}, Todd Stokes @ Georgia Tech 21-Nov-2007]
-   * 
-   * @param value value in IEC REAL data type to be converted
-   * @return float float value 
+   *
+   * Make endianess as required.
+   * For more see http://en.wikipedia.org/wiki/Endianness
+   *
+   * @param int $value
+   * @param bool $endianness
+   * @return int
    */
-  function iecReal2float($value){
-    $two_pow_minus_x = array(
-      1, 0.5, 0.25, 0.125, 0.0625, 0.03125, 0.015625, 
-      0.0078125, 0.00390625, 0.001953125, 0.0009765625, 
-      0.00048828125, 0.000244140625, 0.0001220703125, 
-      0.00006103515625,	0.000030517578125, 0.0000152587890625, 
-      0.00000762939453125, 0.000003814697265625, 0.0000019073486328125, 
-      0.00000095367431640625, 0.000000476837158203125,
-  		0.0000002384185791015625, 0.00000011920928955078125);
-    // get sign, mantisa, exponent
-  	$real_mantisa = $value & 0x7FFFFF | 0x800000; 
-  	$real_exponent = ($value>>23) & 0xFF;
-  	$real_sign = ($value>>31) & 0x01;
-  	$bin_exponent = $real_exponent - 127;
-  	// decode value
-  	if (( $bin_exponent >= -126) && ($bin_exponent <= 127)) {
-      // Mantissa decoding	
-  		for ($i=0; $i<24; $i++) {		  
-  		  if ($real_mantisa & 0x01)
-  			  $val += $two_pow_minus_x[23-$i];
-  			$real_mantisa = $real_mantisa >> 1;
-  		}
-      // Base
-  		$val = $val * pow(2,$bin_exponent);
-  		if (($real_sign == 1)) $val = -$val;
-  	}	
-  	return (float)$val;
-  }
+  private function Endianness($value, $endianness = 0){
+    if ($endianness == 0)
+      return
+        self::iecBYTE(($value >> 8) & 0x000000FF) .
+        self::iecBYTE(($value & 0x000000FF)) .        
+        self::iecBYTE(($value >> 24) & 0x000000FF) .
+        self::iecBYTE(($value >> 16) & 0x000000FF);
+    else
+      return
+        self::iecBYTE(($value >> 24) & 0x000000FF) .
+        self::iecBYTE(($value >> 16) & 0x000000FF) .
+        self::iecBYTE(($value >> 8) & 0x000000FF) .
+        self::iecBYTE(($value & 0x000000FF));
+  } 
   
 }
   
