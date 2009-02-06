@@ -19,9 +19,9 @@ require_once dirname(__FILE__) . '/IecType.php';
 require_once dirname(__FILE__) . '/PhpType.php'; 
 
 /**
- * Modbus UDP master class
- *   
- * This class deals with the MODBUS master using UDP stack. 
+ * ModbusMasterUdp
+ *
+ * This class deals with the MODBUS master using UDP stack.
  *  
  * Implemented MODBUS functions:
  *   - FC  3: read multiple registers
@@ -54,6 +54,8 @@ class ModbusMasterUdp {
   }
 
   /**
+   * connect
+   *
    * Connect the socket
    *
    * @return bool
@@ -74,6 +76,8 @@ class ModbusMasterUdp {
   }
 
   /**
+   * disconnect
+   *
    * Disconnect the socket
    */
   private function disconnect(){    
@@ -82,6 +86,8 @@ class ModbusMasterUdp {
   }
 
   /**
+   * send
+   *
    * Send the packet via Modbus
    *
    * @param string $packet
@@ -92,6 +98,8 @@ class ModbusMasterUdp {
   }
 
   /**
+   * rec
+   *
    * Receive data from the socket
    *
    * @return bool
@@ -128,6 +136,8 @@ class ModbusMasterUdp {
   } 
   
   /**
+   * responseCode
+   *
    * Check the Modbus response code
    *
    * @param string $packet
@@ -146,7 +156,9 @@ class ModbusMasterUdp {
   }
   
   /**
-   * Modbus function FC 3(0x03) - Read Multiple Registers. 
+   * readMultipleRegisters
+   *
+   * Modbus function FC 3(0x03) - Read Multiple Registers.
    * 
    * This function reads {@link $quantity} of Words (2 bytes) from reference 
    * {@link $referenceRead} of a memory of a Modbus device given by 
@@ -185,7 +197,9 @@ class ModbusMasterUdp {
   }
   
   /**
-   * Modbus function FC 3(0x03) - see @see readMultipleRegisters function.
+   * fc3
+   *
+   * Alias to {@link readMultipleRegisters} method.
    *
    * @param int $unitId
    * @param int $reference
@@ -197,6 +211,7 @@ class ModbusMasterUdp {
   }
 
   /**
+   * readMultipleRegistersPacketBuilder
    *
    * Packet FC 3 builder - read multiple registers
    *
@@ -225,6 +240,8 @@ class ModbusMasterUdp {
   }
   
   /**
+   * readMultipleRegistersParser
+   *
    * FC 3 response parser
    *
    * @param string $packet
@@ -243,8 +260,10 @@ class ModbusMasterUdp {
   }
   
   /**
-   * Modbus function FC16(0x10) - Write Multiple Register. 
-   * 
+   * writeMultipleRegister
+   *
+   * Modbus function FC16(0x10) - Write Multiple Register.
+   *
    * This function writes {@link $data} array at {@link $reference} position of 
    * memory of a Modbus device given by {@link $unitId}.
    *
@@ -281,7 +300,9 @@ class ModbusMasterUdp {
 
 
   /**
-   * Modbus function FC16(0x10) - see @see writeMultipleRegister function.
+   * fc16
+   *
+   * Alias to {@link writeMultipleRegister} method
    *
    * @param int $unitId
    * @param int $reference
@@ -295,6 +316,7 @@ class ModbusMasterUdp {
 
 
   /**
+   * writeMultipleRegisterPacketBuilder
    *
    * Packet builder FC16 - WRITE multiple register
    *     e.g.: 4dd90000000d0010300000030603e807d00bb8
@@ -346,6 +368,8 @@ class ModbusMasterUdp {
   }
   
   /**
+   * writeMultipleRegisterParser
+   *
    * FC16 response parser
    *
    * @param string $packet
@@ -358,7 +382,9 @@ class ModbusMasterUdp {
   }
   
   /**
-   * Modbus function FC23(0x17) - Read Write Registers. 
+   * readWriteRegisters
+   *
+   * Modbus function FC23(0x17) - Read Write Registers.
    * 
    * This function writes {@link $data} array at reference {@link $referenceWrite} 
    * position of memory of a Modbus device given by {@link $unitId}. Simultanously, 
@@ -400,7 +426,9 @@ class ModbusMasterUdp {
   }
   
   /**
-   * Modbus function FC23(0x17) - see @see readWriteRegisters
+   * fc23
+   *
+   * Alias to {@link readWriteRegisters} method.
    *
    * @param int $unitId
    * @param int $referenceRead
@@ -415,6 +443,8 @@ class ModbusMasterUdp {
   }
   
   /**
+   * readWriteRegistersPacketBuilder
+   *
    * Packet FC23 builder - READ WRITE registers
    *
    *
@@ -472,6 +502,8 @@ class ModbusMasterUdp {
   
 
   /**
+   * readWriteRegistersParser
+   *
    * FC23 response parser
    *
    * @param string $packet
@@ -490,6 +522,8 @@ class ModbusMasterUdp {
   }
 
   /**
+   * byte2hex
+   *
    * Parse data and get it to the Hex form
    *
    * @param char $value
@@ -502,6 +536,8 @@ class ModbusMasterUdp {
   }
 
   /**
+   * printPacket
+   *
    * Print whole packet in the hex form
    *
    * @param string $packet
