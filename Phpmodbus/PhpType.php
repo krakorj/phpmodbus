@@ -15,10 +15,10 @@
  */
 
 /**
- * PhpType class
+ * PhpType
  *   
- * The class includes set of functions that converts a IEC format to PHP 
- * data types.
+ * The class includes set of methods that convert the received Modbus data
+ * (array of bytes) to the PHP data type, i.e. signed int, unsigned int and float.
  *
  * @author Jan Krakora
  * @copyright  Copyright (c) 2004, 2009 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)      
@@ -28,9 +28,10 @@
 class PhpType {
   
   /**
-   * The function converts array of 4 bytes to float value. The conversion result 
-   * is based on the IEC Real value included in the byte set. The return value 
-   * depends on order of the bytes (endianning).
+   * bytes2float
+   *
+   * The function converts array of 4 bytes to float. The return value 
+   * depends on order of the input bytes (endianning).
    *
    * @param array $values
    * @param bool $endianness
@@ -49,9 +50,10 @@ class PhpType {
   }
   
   /**
+   * bytes2signedInt
    *
-   * The function converts array[$count] of 2 or 4 bytes to signed integer value. 
-   * The return value depends on order of the bytes (endianning).
+   * The function converts array of 2 or 4 bytes to signed integer. 
+   * The return value depends on order of the input bytes (endianning).
    *
    * @param array $values
    * @param bool $endianness
@@ -64,7 +66,7 @@ class PhpType {
     $data = self::checkData($values);    
     // Combine bytes
     $int = self::combineBytes($data, $endianness);
-    // In the case of 2 byte value convert it to 4 byte one
+    // In the case of signed 2 byte value convert it to 4 byte one
     if ((count($values) == 2) && ((0x8000 & $int) > 0)){
       $int = 0xFFFF8000 | $int;
     }
@@ -73,12 +75,14 @@ class PhpType {
   }
   
   /**
-   * The function converts array of 4 bytes to signed double integer value. 
-   * The return value depends on order of the bytes (endianning).
+   * bytes2unsignedInt
+   *
+   * The function converts array of 2 or 4 bytes to unsigned integer.
+   * The return value depends on order of the input bytes (endianning).
    *
    * @param array $values
    * @param bool $endianness
-   * @return int
+   * @return int|float
    */
   public static function bytes2unsignedInt($values, $endianness = 0){
     $data = array();
@@ -88,10 +92,12 @@ class PhpType {
     // Combine bytes
     $int = self::combineBytes($data, $endianness);
     // Convert the value
-    return (int) $int;
+    return self::dword2unsignedInt($int);
   }
   
   /**   
+   * real2float
+   *
    * This function converts a value in IEC-1131 REAL single precision form to float.
    *  
    * For more see [{@link http://en.wikipedia.org/wiki/Single_precision Single precision on Wiki}] or
@@ -130,6 +136,7 @@ class PhpType {
   }
   
   /**
+   * dword2signedInt
    *
    * Switch double word to signed integer
    *
@@ -144,7 +151,24 @@ class PhpType {
     }
   }
   
+    /**
+   * dword2signedInt
+   *
+   * Switch double word to unsigned integer
+   *
+   * @param int $value
+   * @return int|float
+   */
+  private static function dword2unsignedInt($value){
+    if ((0x80000000 & $value) != 0) {
+      return ((float) (0x7FFFFFFF & $value)) + 2147483648;
+    } else {
+      return (int) (0x7FFFFFFF & $value);
+    }
+  }
+
   /**
+   * checkData
    *
    * Check if the data variable is array, and check if the values are numeric
    *
@@ -154,7 +178,7 @@ class PhpType {
   private static function checkData($data){
     // Check the data
     if (!is_array($data)) {
-        throw new Exception('The input data should be an array of numbers.');
+        throw new Exception('The input data should be an array of bytes.');
     }
     // Check the values to be number - must be 
     if (!is_numeric($data[0]) || !is_numeric($data[1])) {
@@ -167,6 +191,7 @@ class PhpType {
   }
   
   /**
+   * combineBytes
    *
    * Combine bytes together
    *
@@ -178,16 +203,16 @@ class PhpType {
     $value = 0;
     // Combine bytes
     if ($endianness == 0)
-      $value = (($data[3] & 0xFF)<<16) | 
+      $value = (($data[3] & 0xFF)<<16) |
         (($data[2] & 0xFF)<<24) | 
         (($data[1] & 0xFF)) | 
         (($data[0] & 0xFF)<<8);
     else
-      $value = (($data[3] & 0xFF)<<24) | 
+      $value = (($data[3] & 0xFF)<<24) |
         (($data[2] & 0xFF)<<16) | 
         (($data[1] & 0xFF)<<8) | 
         (($data[0] & 0xFF));
-    
+
     return $value;
   }
 }
