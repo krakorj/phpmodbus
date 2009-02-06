@@ -7,7 +7,7 @@
   <author>
    Jan Krakora
    <authorblurb>
-    {@link mailto:jak.krakora@wago.com Jan Krakora}
+    {@link mailto:jak.krakora@wago.com email}
    </authorblurb>
   </author>
  </refsynopsisdiv>
@@ -15,11 +15,11 @@
  <refsect1 id="{@id intro}">
   <title>Introduction</title>
   <para>
-   Phpmodbus is a simple PHP library for Modbus funcionality. Currently the library implements 
-   Modbus master using UDP and IEC-1131 data types conversion functionality. 
+   Phpmodbus is a PHP library for the Modbus protocol. The library implements
+   Modbus UDP master class with subset of the most used Modbus commands.
   </para>
   <para>
-   Implemented MODBUS features:
+   The library implements:
    <itemizedlist>
      <listitem><para>FC  3: read multiple registers</para></listitem>
      <listitem><para>FC 16: write multiple registers</para></listitem>
@@ -27,26 +27,44 @@
     </itemizedlist>
   </para>
   <para>
-   For more about Modbus see [{@link http://www.modbus.org}] or 
+   For more about Modbus protocol see [{@link http://www.modbus.org}] or
    [{@link http://en.wikipedia.org/wiki/Modbus Wiki}]
-   </para>
-  <para>
-   For more about IEC-1131 data types see {@link http://books.google.com/books}
-  </para>  
+  </para>
   <note>
-   Developed bellow strong wings of <graphic fileref="wago_logo.png"/> {@link http://www.wago.com}.  
+   Developed with support of <graphic fileref="wago_logo.png"/> {@link http://www.wago.com}.
   </note>
  </refsect1>
  <refsect1 id="{@id intro}">
   <title>Installation</title>
   <para>
-   We suppose you have already installed any Apache+PHP solution. 
-   Copy Phpmodbus library directory to your PHP project folder. 
-   In a script link the PHP library via 
+   At the first, it is supposed an PHP solution has been already installed on
+   your server (LAMP, WAMP, MSS+CGI etc.).
+  </para>
+  <para>
+   Copy the Phpmodbus library to your PHP project folder.
+  </para>
+  <para>
+   Create a PHP script and assign the library using
      <programlisting role="ini">
-      <![CDATA[ require_once './Phpmodbus/ModbusMasterUdp.php'; ]]>
+      <![CDATA[ require_once dirname(__FILE__) . './Phpmodbus/ModbusMasterUdp.php'; ]]>
      </programlisting>
-  For more see examples bellow.
+  </para>
+  <para>
+    To create the Modbus master object, that will communicate with a Modbus slave
+    at IP address 192.168.1.1, write
+    <programlisting role="ini">
+      <![CDATA[ $modbus = new ModbusMasterUdp("192.168.1.1"); ]]>
+     </programlisting>
+  </para>
+  <para>
+    To read 5 words (10 bytes) located at the memory beginning at address = 12288 of
+    the devide with Modbus ID=0 use
+    <programlisting role="ini">
+      <![CDATA[ $recData = $modbus->readMultipleRegisters(0, 12288, 5); ]]>
+     </programlisting>
+  </para>
+  <para>
+  For other examples see sections bellow.
   </para>
  </refsect1>
  <refsect1 id="{@id examples}">
@@ -90,10 +108,13 @@
     {@example example_750841_Mmemory.php}
     </para>
   </refsect2>
-  <refsect2 id="{@id example_fc23}">
-    <title>IEC functionality</title>    
+  <refsect2 id="{@id datatype}">
+    <title>Data conversion to PHP types.</title>
     <para>
-    {@example example_iec.php}
+      Conversion of the data bytes, received from Modbus, to a PHP type.
+    </para>
+    <para>
+    {@example example_datatype.php}
     </para>
   </refsect2>
  </refsect1> 
