@@ -10,7 +10,7 @@ see project at http://phpmodbus.googlecode.com
 Release notes
 ===============
 
-0.1 -> 0.2.0
+0.1 -> 0.2.r20
 ---------------
 + Added new class for conversion from received bytes to PHP data types (PhpType class)
 + Added new data conversion using PhpType example
