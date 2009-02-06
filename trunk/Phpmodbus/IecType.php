@@ -14,10 +14,10 @@
  */
 
 /**
- * IecType class
+ * IecType
  *   
  * The class includes set of IEC-1131 data type functions that converts a PHP 
- * data types into a IEC format and vice versa.
+ * data types to a IEC data type.
  *
  * @author Jan Krakora
  * @copyright  Copyright (c) 2004, 2009 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)      
@@ -64,7 +64,7 @@ class IecType {
    */
   function iecDINT($value, $endianness = 0){
     // result with right endianness
-    return self::Endianness($value, $endianness);
+    return self::endianness($value, $endianness);
   }
   
   /**
@@ -80,7 +80,7 @@ class IecType {
     // iecREAL representation
     $real = self::float2iecReal($value);
     // result with right endianness
-    return self::Endianness($real, $endianness);   
+    return self::endianness($real, $endianness);
   }
   
   /**
@@ -149,6 +149,7 @@ class IecType {
   }
   
   /**
+   * endianness
    *
    * Make endianess as required.
    * For more see http://en.wikipedia.org/wiki/Endianness
@@ -157,7 +158,7 @@ class IecType {
    * @param bool $endianness
    * @return int
    */
-  private function Endianness($value, $endianness = 0){
+  private function endianness($value, $endianness = 0){
     if ($endianness == 0)
       return
         self::iecBYTE(($value >> 8) & 0x000000FF) .
