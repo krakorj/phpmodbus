@@ -1,6 +1,6 @@
 <?php
 
-require_once './Phpmodbus/ModbusMasterUdp.php';
+require_once dirname(__FILE__) . './Phpmodbus/ModbusMasterUdp.php';
 
 // Create Modbus object
 $modbus = new ModbusMasterUdp("192.168.1.99");
