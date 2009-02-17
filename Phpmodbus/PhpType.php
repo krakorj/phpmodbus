@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Phpmodbus Copyright (c) 2004, 2009 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)
  *  
@@ -120,6 +120,7 @@ class PhpType {
   	$real_exponent = ($value>>23) & 0xFF;
   	$real_sign = ($value>>31) & 0x01;
   	$bin_exponent = $real_exponent - 127;
+  	$val = 0;
   	// decode value
   	if (( $bin_exponent >= -126) && ($bin_exponent <= 127)) {
       // Mantissa decoding	
@@ -177,16 +178,25 @@ class PhpType {
    */
   private static function checkData($data){
     // Check the data
-    if (!is_array($data)) {
-        throw new Exception('The input data should be an array of bytes.');
+    if (!is_array($data) ||
+      count($data)<2 ||
+      count($data)>4 ||
+      count($data)==3) {
+        throw new Exception('The input data should be an array of 2 or 4 bytes.');
+    }    
+    // Fill the rest of array by zeroes
+    if (count($data) == 2) {
+       $data[2] = 0;
+       $data[3] = 0;
     }
-    // Check the values to be number - must be 
-    if (!is_numeric($data[0]) || !is_numeric($data[1])) {
-        throw new Exception('Data are not numeric.'); 
-    }
-    if (!is_numeric($data[2])) $data[2] = 0;
-    if (!is_numeric($data[3])) $data[3] = 0;
-    
+    // Check the values to be number
+    if (!is_numeric($data[0]) ||
+        !is_numeric($data[1]) ||
+        !is_numeric($data[2]) ||
+        !is_numeric($data[3])) {
+          throw new Exception('Data are not numeric or the array keys are not indexed by 0,1,2 and 3');
+        }
+
     return $data;
   }
   
