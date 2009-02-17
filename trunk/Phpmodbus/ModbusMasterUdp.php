@@ -222,6 +222,8 @@ class ModbusMasterUdp {
    */
   private function readMultipleRegistersPacketBuilder($unitId, $reference, $quantity){
     $dataLen = 0;
+    // build data section
+    $buffer1 = "";
     // build body
     $buffer2 = "";
     $buffer2 .= iecType::iecBYTE(3);             // FC 3 = 3(0x03)
