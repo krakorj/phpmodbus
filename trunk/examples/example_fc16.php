@@ -1,9 +1,9 @@
 <?php
 
-require_once dirname(__FILE__) . './Phpmodbus/ModbusMasterUdp.php';
+require_once dirname(__FILE__) . '/Phpmodbus/ModbusMasterUdp.php';
 
 // Create Modbus object
-$modbus = new ModbusMasterUdp("192.168.1.99");
+$modbus = new ModbusMasterUdp("192.168.1.1");
 
 // Data to be writen
 $data = array(1000, 2000, 3.0);
