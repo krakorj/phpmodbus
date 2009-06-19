@@ -94,7 +94,47 @@ class PhpType {
     // Convert the value
     return self::dword2unsignedInt($int);
   }
-  
+
+  /**
+   * bytes2string
+   *
+   * The function converts an values array to the string. The function detects
+   * the end of the string by 0x00 character as defined by string standards.
+   *
+   * @param array $values
+   * @param bool $endianness
+   * @return string
+   */
+  public static function bytes2string($values, $endianness = 0){
+    // Prepare string variable
+    $str = "";
+    // Parse the received data word array
+      for($i=0;$i<count($values);$i+=2){
+        if ($endianness) {
+          if($values[$i] != 0)
+            $str .= chr($values[$i]);
+          else
+            break;
+          if($values[$i+1] != 0)
+            $str .= chr($values[$i+1]);
+          else
+            break;
+        }
+        else {
+          if($values[$i+1] != 0)
+            $str .= chr($values[$i+1]);
+          else
+            break;
+          if($values[$i] != 0)
+            $str .= chr($values[$i]);
+          else
+            break;        
+        }
+      }
+    // return string
+    return $str; 
+  }
+
   /**   
    * real2float
    *
