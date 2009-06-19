@@ -1,9 +1,9 @@
 <?php
 
-require_once dirname(__FILE__) . './Phpmodbus/ModbusMasterUdp.php';
+require_once dirname(__FILE__) . '/Phpmodbus/ModbusMasterUdp.php';
 
 // Create Modbus object
-$ip = "192.168.1.99";
+$ip = "192.168.1.1";
 $modbus = new ModbusMasterUdp($ip);
 
 // FC 3
