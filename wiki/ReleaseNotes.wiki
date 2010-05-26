@@ -1,6 +1,13 @@
 #labels Featured
 = Release notes =
 
+==0.2 -> 0.3.r38==
+
+  * try-catch functionality
+  * PhpType and IecType conversion improvement  
+  * Improved examples    
+  * Improved commentaries for documentation
+
 ==0.1 -> 0.2.r20==
 
   * Added new class for conversion from received bytes to PHP data types (PhpType class)
