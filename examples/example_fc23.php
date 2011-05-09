@@ -6,8 +6,8 @@ require_once dirname(__FILE__) . '/../Phpmodbus/ModbusMasterUdp.php';
 $modbus = new ModbusMasterUdp("192.192.15.51");
 
 // Data to be writen
-$data = array(1000, 2000, 3.0);
-$dataTypes = array("INT", "DINT", "REAL");
+$data = array(10, -1000, 2000, 3.0);
+$dataTypes = array("WORD", "INT", "DINT", "REAL");
 
 try {
     // FC23
