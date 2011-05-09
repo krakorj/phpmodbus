@@ -37,6 +37,8 @@ class ModbusMasterUdp {
   var $sock;
   var $port = "502";
   var $host = "192.168.1.1";
+  var $client = "";
+  var $client_port = "502";
   var $status;
   var $timeout_sec = 5; // 5 sec
   var $endianess = 0; // defines endian codding (little endian == 0, big endian == 1) 
@@ -70,7 +72,17 @@ class ModbusMasterUdp {
    */
   private function connect(){
     // UDP socket
-    $this->sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);    
+    $this->sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+    // Bind the client socket to a specific local port
+    if (strlen($this->client)>0){
+        $result = socket_bind($this->sock, $this->client, $this->client_port);
+        if ($result === false) {
+            throw new Exception("socket_bind() failed.</br>Reason: ($result)".
+                socket_strerror(socket_last_error($this->sock)));
+        } else {
+            $this->status .= "Bound\n";
+        }
+    }
     // connect
     $result = @socket_connect($this->sock, $this->host, $this->port);
     if ($result === false) {
@@ -321,7 +333,8 @@ class ModbusMasterUdp {
    * @return string
    */
   private function writeMultipleRegisterPacketBuilder($unitId, $reference, $data, $dataTypes){
-    $dataLen = 0;        
+    $dataLen = 0;
+    $endianness = 0;
     // build data section
     $buffer1 = "";
     foreach($data as $key=>$dataitem) {
@@ -330,11 +343,11 @@ class ModbusMasterUdp {
         $dataLen += 2;
       }
       elseif($dataTypes[$key]=="DINT"){
-        $buffer1 .= iecType::iecDINT($dataitem, $endianess);   // register values x
+        $buffer1 .= iecType::iecDINT($dataitem, $endianness);   // register values x
         $dataLen += 4;
       }
       elseif($dataTypes[$key]=="REAL") {
-        $buffer1 .= iecType::iecREAL($dataitem, $endianess);   // register values x        
+        $buffer1 .= iecType::iecREAL($dataitem, $endianness);   // register values x
         $dataLen += 4;
       }       
       else{
@@ -369,7 +382,7 @@ class ModbusMasterUdp {
    * @return bool
    */
   private function writeMultipleRegisterParser($packet){
-    $this->responseCode($rpacket);
+    $this->responseCode($packet);
     return true;
   }
   
@@ -443,7 +456,8 @@ class ModbusMasterUdp {
    * @return string
    */
   private function readWriteRegistersPacketBuilder($unitId, $referenceRead, $quantity, $referenceWrite, $data, $dataTypes){
-    $dataLen = 0;        
+    $dataLen = 0;
+    $endianness = 0;
     // build data section
     $buffer1 = "";
     foreach($data as $key => $dataitem) {
@@ -452,11 +466,11 @@ class ModbusMasterUdp {
         $dataLen += 2;
       }
       elseif($dataTypes[$key]=="DINT"){
-        $buffer1 .= iecType::iecDINT($dataitem, $endianess);   // register values x
+        $buffer1 .= iecType::iecDINT($dataitem, $endianness);   // register values x
         $dataLen += 4;
       }
       elseif($dataTypes[$key]=="REAL") {
-        $buffer1 .= iecType::iecREAL($dataitem, $endianess);   // register values x        
+        $buffer1 .= iecType::iecREAL($dataitem, $endianness);   // register values x
         $dataLen += 4;
       }       
       else{
