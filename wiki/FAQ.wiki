@@ -96,3 +96,25 @@ $values = array_chunk($receivedArrayOfBytes, 4);
 foreach($values as $bytes)
    PhpType::bytes2float($bytes);
 }}}
+
+== Q3: Device is not reachable ==
+
+How to operate the device using the library? The library timeout exceeds!
+
+== A3  ==
+
+To operate the device via Modbus the device IP address and port (502) 
+must be reachable from server, i.e. it has to be in the same net domain. 
+To verify it use a ping command from the server.
+
+== Q4: PHPModbus dependencies ==
+
+Library shows the socket functionality is not supported.
+
+== A4 ==
+
+The library uses the PHP socket functionality. For that the server php.ini 
+should be configured to operate it, i.e. set on the php_sockets.dll extension.
+{{{
+extension=php_sockets.dll
+}}}
