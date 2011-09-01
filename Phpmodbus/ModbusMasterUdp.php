@@ -171,6 +171,121 @@ class ModbusMasterUdp {
   }
   
   /**
+   * readCoils
+   * 
+   * Modbus function FC 1(0x01) - Read Coils
+   * 
+   * Reads {@link $quantity} of Coils (boolean) from reference 
+   * {@link $referenceRead} of a memory of a Modbus device given by 
+   * {@link $unitId}.
+   * 
+   * @param type $unitId
+   * @param type $reference
+   * @param type $quantity 
+   */
+  function readCoils($unitId, $reference, $quantity){
+    $this->status .= "readCoils: START\n";
+    // connect
+    $this->connect();
+    // send FC 3    
+    $packet = $this->readCoilsPacketBuilder($unitId, $reference, $quantity);
+    $this->status .= $this->printPacket($packet);    
+    $this->send($packet);
+    // receive response
+    $rpacket = $this->rec();
+    $this->status .= $this->printPacket($rpacket);    
+    // parse packet    
+    $receivedData = $this->readCoilsParser($rpacket, $quantity);
+    // disconnect
+    $this->disconnect();
+    $this->status .= "readCoils: DONE\n";
+    // return
+    return $receivedData;
+  }
+  
+  /**
+   * fc1
+   * 
+   * Alias to {@link readMultipleCoils} method
+   * 
+   * @param type $unitId
+   * @param type $reference
+   * @param type $quantity
+   * @return type 
+   */
+  function fc1($unitId, $reference, $quantity){
+    return $this->readCoils($unitId, $reference, $quantity);
+  }
+  
+  /**
+   * readCoilsPacketBuilder
+   * 
+   * FC1 packet builder - read coils
+   * 
+   * @param type $unitId
+   * @param type $reference
+   * @param type $quantity
+   * @return type 
+   */
+  private function readCoilsPacketBuilder($unitId, $reference, $quantity){
+    $dataLen = 0;
+    // build data section
+    $buffer1 = "";
+    // build body
+    $buffer2 = "";
+    $buffer2 .= iecType::iecBYTE(1);              // FC 1 = 1(0x01)
+    // build body - read section    
+    $buffer2 .= iecType::iecINT($reference);      // refnumber = 12288      
+    $buffer2 .= iecType::iecINT($quantity);       // quantity
+    $dataLen += 5;
+    // build header
+    $buffer3 = '';
+    $buffer3 .= iecType::iecINT(rand(0,65000));   // transaction ID
+    $buffer3 .= iecType::iecINT(0);               // protocol ID
+    $buffer3 .= iecType::iecINT($dataLen + 1);    // lenght
+    $buffer3 .= iecType::iecBYTE($unitId);        //unit ID
+    // return packet string
+    return $buffer3. $buffer2. $buffer1;
+  }
+  
+  /**
+   * readCoilsParser
+   * 
+   * FC 1 response parser
+   * 
+   * @param type $packet
+   * @param type $quantity
+   * @return type 
+   */
+  private function readCoilsParser($packet, $quantity){    
+    $data = array();
+    // check Response code
+    $this->responseCode($packet);
+    // get data from stream
+    for($i=0;$i<ord($packet[8]);$i++){
+      $data[$i] = ord($packet[9+$i]);
+    }    
+    // get bool values to array
+    $data_bolean_array = array();
+    $di = 0;
+    foreach($data as $value){
+      for($i=0;$i<8;$i++){
+        if($di > $quantity) continue;
+        // get boolean value 
+        $v = ($value >> $i) & 0x01;
+        // build boolean array
+        if($v == 0){
+          $data_bolean_array[] = FALSE;
+        } else {
+          $data_bolean_array[] = TRUE;
+        }
+        $di++;
+      }
+    }
+    return $data_bolean_array;
+  }
+  
+  /**
    * readMultipleRegisters
    *
    * Modbus function FC 3(0x03) - Read Multiple Registers.
@@ -217,8 +332,8 @@ class ModbusMasterUdp {
    */
   function fc3($unitId, $reference, $quantity){
     return $this->readMultipleRegisters($unitId, $reference, $quantity);
-  }
-
+  }  
+  
   /**
    * readMultipleRegistersPacketBuilder
    *
@@ -267,6 +382,124 @@ class ModbusMasterUdp {
       $data[$i] = ord($packet[9+$i]);
     }    
     return $data;
+  }
+  
+  /**
+   * writeMultipleCoils
+   * 
+   * Modbus function FC15(0x0F) - Write Multiple Coils
+   *
+   * This function writes {@link $data} array at {@link $reference} position of 
+   * memory of a Modbus device given by {@link $unitId}. 
+   * 
+   * @param type $unitId
+   * @param type $reference
+   * @param type $data
+   * @return type 
+   */
+  function writeMultipleCoils($unitId, $reference, $data){
+    $this->status .= "writeMultipleCoils: START\n";
+    // connect
+    $this->connect();
+    // send FC16    
+    $packet = $this->writeMultipleCoilsPacketBuilder($unitId, $reference, $data);
+    $this->status .= $this->printPacket($packet);    
+    $this->send($packet);
+    // receive response
+    $rpacket = $this->rec();
+    $this->status .= $this->printPacket($rpacket);    
+    // parse packet
+    $this->writeMultipleCoilsParser($rpacket);
+    // disconnect
+    $this->disconnect();
+    $this->status .= "writeMultipleCoils: DONE\n";
+    return true;
+  }
+  
+  /**
+   * fc15
+   *
+   * Alias to {@link writeMultipleCoils} method
+   *
+   * @param int $unitId
+   * @param int $reference
+   * @param array $data
+   * @return bool
+   */
+  function fc15($unitId, $reference, $data){    
+    return $this->writeMultipleCoils($unitId, $reference, $data);
+  }
+  
+  /**
+   * writeMultipleCoilsPacketBuilder
+   *
+   * Packet builder FC15 - Write multiple coils
+   *
+   * @param int $unitId
+   * @param int $reference
+   * @param array $data
+   * @return string
+   */
+  private function writeMultipleCoilsPacketBuilder($unitId, $reference, $data){
+    $dataLen = 0;
+    $endianness = 0;    
+    // build bool stream to the WORD array
+    $data_word_stream = array();
+    $data_word = 0;
+    $shift = 0;    
+    for($i=0;$i<count($data);$i++) {
+      if((($i % 8) == 0) && ($i > 0)) {
+        $data_word_stream[] = $data_word;
+        $shift = 0;
+        $data_word = 0;
+        $data_word |= (0x01 && $data[$i]) << $shift;
+        $shift++;
+      }
+      else {
+        $data_word |= (0x01 && $data[$i]) << $shift;
+        $shift++;
+      }
+    }
+    $data_word_stream[] = $data_word;
+    // show binary stream to status string
+    foreach($data_word_stream as $d){
+        $this->status .= sprintf("byte=b%08b\n", $d);
+    }    
+    // build data section
+    $buffer1 = "";
+    foreach($data_word_stream as $key=>$dataitem) {
+        $buffer1 .= iecType::iecBYTE($dataitem);   // register values x
+        $dataLen += 1;
+    }
+    // build body
+    $buffer2 = "";
+    $buffer2 .= iecType::iecBYTE(15);             // FC 15 = 15(0x0f)
+    $buffer2 .= iecType::iecINT($reference);      // refnumber = 12288      
+    $buffer2 .= iecType::iecINT(count($data));      // bit count      
+    $buffer2 .= iecType::iecBYTE((count($data)+7)/8);       // byte count
+    $dataLen += 6;
+    // build header
+    $buffer3 = '';
+    $buffer3 .= iecType::iecINT(rand(0,65000));   // transaction ID    
+    $buffer3 .= iecType::iecINT(0);               // protocol ID    
+    $buffer3 .= iecType::iecINT($dataLen + 1);    // lenght    
+    $buffer3 .= iecType::iecBYTE($unitId);        // unit ID    
+     
+    // return packet string
+    return $buffer3. $buffer2. $buffer1;
+  }
+  
+  /**
+   * writeMultipleCoilsParser
+   *
+   * FC15 response parser
+   *
+   * @param string $packet
+   * @return bool
+   */
+  private function writeMultipleCoilsParser($packet){
+    $this->responseCode($packet);
+    return true;
   }
   
   /**
