@@ -1,6 +1,9 @@
 #labels Featured
 = Release notes =
 
+==0.3 -> 0.4.r56==
+  * Fixed problem with endiannes declaration (Issue 10)
+
 ==0.3 -> 0.4.r53==
   * Added fc1 and fc15 read/write coils
   * Added fc1, fc15 functionality examples
