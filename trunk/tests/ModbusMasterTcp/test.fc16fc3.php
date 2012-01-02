@@ -3,7 +3,7 @@ require_once dirname(__FILE__) . '/../../Phpmodbus/ModbusMasterTcp.php';
 require_once dirname(__FILE__) . '/../config.php';
 
 // Create Modbus object
-$modbus = new ModbusMasterTcp($testip);
+$modbus = new ModbusMasterTcp($test_host_ip);
 
 // Data to be writen - BYTE
 $data = array(0, 1, 1, pow(2,8)-1, pow(2,8)-1);
