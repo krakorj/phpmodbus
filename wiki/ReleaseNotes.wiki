@@ -1,6 +1,10 @@
 #labels Featured
 = Release notes =
 
+==0.4 -> 0.5.r70==
+  * Added new TCP functionality
+  * Class structure changed, but back compatible  
+
 ==0.3 -> 0.4.r56==
   * Fixed problem with endiannes declaration (Issue 10)
 
