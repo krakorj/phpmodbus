@@ -19,7 +19,7 @@ require_once dirname(__FILE__) . '/IecType.php';
 require_once dirname(__FILE__) . '/PhpType.php'; 
 
 /**
- * ModbusMasterUdp
+ * ModbusMaster
  *
  * This class deals with the MODBUS master
  *  
