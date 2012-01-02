@@ -36,7 +36,7 @@ require_once dirname(__FILE__) . '/ModbusMaster.php';
  */
 class ModbusMasterTcp extends ModbusMaster {
   /**
-   * Modbus
+   * ModbusMasterTcp
    *
    * This is the constructor that defines {@link $host} IP address of the object. 
    *     
