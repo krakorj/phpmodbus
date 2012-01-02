@@ -97,7 +97,7 @@ class ModbusMaster {
         }
     }
     // Connect the socket
-    $result = socket_connect($this->sock, $this->host, $this->port);
+    $result = @socket_connect($this->sock, $this->host, $this->port);
     if ($result === false) {
         throw new Exception("socket_connect() failed.</br>Reason: ($result)".
             socket_strerror(socket_last_error($this->sock)));
