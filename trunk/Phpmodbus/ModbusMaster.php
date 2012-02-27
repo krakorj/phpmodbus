@@ -43,7 +43,7 @@ class ModbusMaster {
   public $client_port = "502";
   public $status;
   public $timeout_sec = 5; // Timeout 5 sec
-  public $endianess = 0; // Endianess codding (little endian == 0, big endian == 1) 
+  public $endianness = 0; // Endianness codding (little endian == 0, big endian == 1) 
   public $socket_protocol = "UDP"; // Socket protocol (TCP, UDP)
   
   /**
