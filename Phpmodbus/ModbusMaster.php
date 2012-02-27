@@ -175,7 +175,7 @@ class ModbusMaster {
    * @return bool
    */
   private function responseCode($packet){    
-    if(($packet[7] & 0x80) > 0) {
+    if((ord($packet[7]) & 0x80) > 0) {
       throw new Exception("Modbus response error code:" . ord($packet[8]));
     } else {
       $this->status .= "Modbus response error code: NOERROR\n";
