@@ -176,7 +176,27 @@ class ModbusMaster {
    */
   private function responseCode($packet){    
     if((ord($packet[7]) & 0x80) > 0) {
-      throw new Exception("Modbus response error code:" . ord($packet[8]));
+      // failure code
+      $failure_code = ord($packet[8]);
+      // failure code strings
+      $failures = array(
+        0x01 => "ILLEGAL FUNCTION",
+        0x02 => "ILLEGAL DATA ADDRESS",
+        0x03 => "ILLEGAL DATA VALUE",
+        0x04 => "SLAVE DEVICE FAILURE",
+        0x05 => "ACKNOWLEDGE",
+        0x06 => "SLAVE DEVICE BUSY",
+        0x08 => "MEMORY PARITY ERROR",
+        0x0A => "GATEWAY PATH UNAVAILABLE",
+        0x0B => "GATEWAY TARGET DEVICE FAILED TO RESPOND");
+      // get failure string
+      if(key_exists($failure_code, $failures)) {
+        $failure_str = $failures[$failure_code];
+      } else {
+        $failure_str = "UNDEFINED FAILURE CODE";
+      }
+      // exception response
+      throw new Exception("Modbus response error code: $failure_code ($failure_str)");
     } else {
       $this->status .= "Modbus response error code: NOERROR\n";
       return true;
