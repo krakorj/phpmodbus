@@ -118,3 +118,17 @@ should be configured to operate it, i.e. set on the php_sockets.dll extension.
 {{{
 extension=php_sockets.dll
 }}}
+
+== Q5: Modbus RTU and PHP Modbus ==
+
+Does PHP Modbus library support the Modbus RTU?
+
+== A5 ==
+
+The PHP modbus library does not support/implement the Modbus RTU. Modbus RTU protocol is used for RS485 ro RS232 physiscal layer based devices, e.g. Schneider Power Meter, PowerLogic® PM750. Any convertor RS485---Ethernet convertor will not help due to the protocol differences.
+
+The recommended way is to read data from the device using a Modbus RTU to Modbus TCP convertor, for example a Ethernet PLC device with RS485 interface that converts (for example PLC Wago 750-881) and read the data via Ethernet Modbus as supproted by the PHP modbus library. 
+
+Another way is to use the python library http://code.google.com/p/modbus-tk/, that reads device data directly from a PC serial interface (you need the RS485-RS232 convertor for PM750 like devices).
+
+All is question of technology configuration.
