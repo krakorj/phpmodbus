@@ -125,10 +125,32 @@ Does PHP Modbus library support the Modbus RTU?
 
 == A5 ==
 
-The PHP modbus library does not support/implement the Modbus RTU. Modbus RTU protocol is used for RS485 ro RS232 physiscal layer based devices, e.g. Schneider Power Meter, PowerLogic® PM750. Any convertor RS485---Ethernet convertor will not help due to the protocol differences.
+The PHP modbus library does not support/implement the Modbus RTU. Modbus RTU protocol is used for RS485 ro RS232 physiscal layer based devices, e.g. Schneider Power Meter, PowerLogic PM750. Any convertor RS485---Ethernet convertor will not help due to the protocol differences.
 
 The recommended way is to read data from the device using a Modbus RTU to Modbus TCP convertor, for example a Ethernet PLC device with RS485 interface that converts (for example PLC Wago 750-881) and read the data via Ethernet Modbus as supproted by the PHP modbus library. 
 
 Another way is to use the python library http://code.google.com/p/modbus-tk/, that reads device data directly from a PC serial interface (you need the RS485-RS232 convertor for PM750 like devices).
 
 All is question of technology configuration.
+
+== Q6: Modbus PHP and Beckhoff 9000/9050 ==
+
+Where is the the address MW0 located at Beckhoff 9000/9050? The 0x3000 address reading gets watchdog expiration.
+
+
+== A6 ==
+In accordance to the Beckhoff 9000/9050 manual 
+([http://download.beckhoff.com/download/Document/BusTermi/BCoupler/BK9000en.chm link]) the M-memory MB0 is located at 0x4000 not at 0x3000 as in the Wago systems.
+
+For that your code should not point to 0x3000 (MW0 in Wago device)
+{{{
+$recData = $modbus->readMultipleRegisters(0, 12288, 5); 
+}}}
+but to 0x4000. 
+{{{
+$recData = $modbus->readMultipleRegisters(0, 0x4000, 5); 
+}}}
+For MB10 example addr=0x4000+(10/2)
+{{{
+$recData = $modbus->readMultipleRegisters(0, 0x4000+(10/2), 5); 
+}}}
