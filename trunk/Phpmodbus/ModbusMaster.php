@@ -303,7 +303,7 @@ class ModbusMaster {
     $di = 0;
     foreach($data as $value){
       for($i=0;$i<8;$i++){
-        if($di > $quantity) continue;
+        if($di == $quantity) continue;
         // get boolean value 
         $v = ($value >> $i) & 0x01;
         // build boolean array
