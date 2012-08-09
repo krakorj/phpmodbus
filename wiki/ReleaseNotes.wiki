@@ -1,6 +1,11 @@
 #labels Featured
 = Release notes =
 
+==0.5 -> 0.6.r98==
+  * Added FC2, FC6 functionality
+  * Fixed Issue 13 error code exception 
+  * Fixed Issue 14 read coil
+
 ==0.4 -> 0.5.r70==
   * Added new TCP functionality
   * Class structure changed, but back compatible  
@@ -9,8 +14,8 @@
   * Fixed problem with endiannes declaration (Issue 10)
 
 ==0.3 -> 0.4.r53==
-  * Added fc1 and fc15 read/write coils
-  * Added fc1, fc15 functionality examples
+  * Added FC1 and FC15 read/write coils
+  * Added FC1, FC15 functionality examples
 
 ==0.2 -> 0.3.r38==
 
