@@ -7,7 +7,8 @@ $modbus = new ModbusMaster("192.192.15.51", "UDP");
 
 try {
     // FC 2
-    $recData = $modbus->readInputDiscretes(0, 12288, 12);
+    // read 2 input bits from address 0x0 (Wago input image)
+    $recData = $modbus->readInputDiscretes(0, 0, 2);
 }
 catch (Exception $e) {
     // Print error information if any
