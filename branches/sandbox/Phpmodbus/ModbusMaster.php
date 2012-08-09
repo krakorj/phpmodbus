@@ -25,8 +25,10 @@ require_once dirname(__FILE__) . '/PhpType.php';
  *  
  * Implemented MODBUS master functions:
  *   - FC  1: read coils
+ *   - FC  2: read input discretes
  *   - FC  3: read multiple registers
- *   - FC 15: write multiple coils 
+ *   - FC  6: write single register
+ *   - FC 15: write multiple coils
  *   - FC 16: write multiple registers
  *   - FC 23: read write registers
  *   
