@@ -1,0 +1,210 @@
+<refentry id="{@id}">
+ <refnamediv>
+  <refname>Phpmodbus user's guide</refname>
+  <refpurpose>Phpmodbus How-to</refpurpose>
+ </refnamediv>
+ <refsynopsisdiv>
+  <author>
+   Jan Krakora
+   <authorblurb>
+    {@link mailto:krakora.jan@googlemail.com email}
+   </authorblurb>
+  </author>
+ </refsynopsisdiv>
+ {@toc}
+ <refsect1 id="{@id intro}">
+  <title>Introduction</title>
+  <para>
+   Phpmodbus is a PHP library for the Modbus protocol. The library implements
+   Modbus TCP/UDP master class with subset of the most used Modbus commands.
+  </para>
+  <para>
+   The library implements:
+   <itemizedlist>
+     <listitem><para>FC  1: read multiple coils</para></listitem>
+     <listitem><para>FC  2: read input discretes</para></listitem>
+     <listitem><para>FC  3: read multiple registers</para></listitem>
+     <listitem><para>FC  4: read multiple input registers</para></listitem>
+     <listitem><para>FC  5: write single coil</para></listitem>
+     <listitem><para>FC  6: write single register</para></listitem>
+     <listitem><para>FC 15: write multiple coils</para></listitem>
+     <listitem><para>FC 16: write multiple registers</para></listitem>
+     <listitem><para>FC 23: read write registers</para></listitem>
+    </itemizedlist>
+  </para>
+  <para>
+   For more about Modbus protocol see [{@link http://www.modbus.org}] or
+   [{@link http://en.wikipedia.org/wiki/Modbus Wiki}]
+  </para>
+ </refsect1>
+ <refsect1 id="{@id install}">
+  <title>Install</title>
+  <para>
+   At the first, it is supposed an PHP solution has been already installed on
+   your server (LAMP, WAMP, MSS+CGI etc.).
+  </para>
+  <para>
+   Copy the Phpmodbus library to your PHP project folder.
+  </para>
+  <para>
+   Create a PHP script and assign the library using require_once() command
+     <programlisting role="c">
+      <![CDATA[require_once dirname(__FILE__) . '/Phpmodbus/ModbusMaster.php'; ]]>
+     </programlisting>     
+  </para>
+  <para>
+    To create UDP Modbus master object communicating to an modbus slave 
+    e.g. at IP address 192.168.1.1 write
+    <programlisting role="c" linenumbering="numbered" startinglinenumber="2">
+      <![CDATA[ $modbus = new ModbusMaster("192.168.1.1", "UDP"); ]]>
+    </programlisting>
+  </para>
+  <para>
+    To create TCP Modbus master use
+    <programlisting role="c" linenumbering="numbered" startinglinenumber="2">
+      <![CDATA[ $modbus = new ModbusMaster("192.168.1.1", "TCP"); ]]>
+    </programlisting>
+  </para>
+  <para>
+    To read 5 words (10 bytes) from the device ID=0 and its memory address 12288
+    use try-catch method call
+    <programlisting role="c" linenumbering="numbered" startinglinenumber="3">
+      <![CDATA[try {
+    // Function processing
+    $recData = $modbus->readMultipleRegisters(0, 12288, 5); 
+}
+catch (Exception $e) {
+    // Exception processing, e.g. print error information
+    echo $modbus;
+    echo $e;
+    exit; 
+}]]>
+     </programlisting>
+  </para>
+  <para>
+    To process the function byte stream, use conversion to PHP types in 
+  </para>
+  <programlisting role="c" linenumbering="numbered" startinglinenumber="15">
+      <![CDATA[echo PhpType::bytes2string($recData); ]]>
+     </programlisting>
+  <para>
+  For other examples see sections bellow.
+  </para>
+ </refsect1>  
+ <refsect1 id="{@id examples}">
+  <title>Examples</title>
+  <para>
+    This section presents library features and examples
+  </para>
+    <refsect2 id="{@id example_fc1}">
+    <title>FC1 - read mutliple coils</title>
+    <para>
+      FC1 functionality example
+    </para>
+    <para>
+    {@example example_fc1.php}
+    </para>
+  </refsect2>
+  <refsect2 id="{@id example_fc2}">
+    <title>FC2 - read input discretes</title>
+    <para>
+      FC2 functionality example
+    </para>
+    <para>
+    {@example example_fc2.php}
+    </para>
+  </refsect2>
+  <refsect2 id="{@id example_fc3}">
+    <title>FC3 - read mutliple registers</title>
+    <para>
+      FC3 functionality example
+    </para>
+    <para>
+    {@example example_fc3.php}
+    </para>
+  </refsect2>
+  <refsect2 id="{@id example_fc4}">
+    <title>FC4 - read multiple input registers </title>
+    <para>
+      FC4 functionality example
+    </para>
+    <para>
+    {@example example_fc4.php}
+    </para>
+  </refsect2>
+  <refsect2 id="{@id example_fc5}">
+    <title>FC5 - write single coil</title>
+    <para>
+      FC5 functionality example
+    </para>
+    <para>
+    {@example example_fc5.php}
+    </para>
+  </refsect2>
+  <refsect2 id="{@id example_fc6}">
+    <title>FC6 - write single register</title>
+    <para>
+      FC6 functionality example
+    </para>
+    <para>
+    {@example example_fc6.php}
+    </para>
+  </refsect2>
+  <refsect2 id="{@id example_fc15}">
+    <title>FC15 - write mutliple coils</title>
+    <para>
+      FC15 functionality example
+    </para>
+    <para>
+    {@example example_fc15.php}
+    </para>
+  </refsect2>
+  <refsect2 id="{@id example_fc16}">
+    <title>FC16 - write mutliple registers</title>
+    <para>
+      FC16 functionality example
+    </para>
+    <para>
+    {@example example_fc16.php}
+    </para>
+  </refsect2>
+  <refsect2 id="{@id example_fc23}">
+    <title>FC23 - read write registers</title>
+    <para>
+      FC23 functionality example
+    </para>
+    <para>
+    {@example example_fc23.php}
+    </para>
+  </refsect2>
+  <refsect2 id="{@id wago_example}">
+    <title>Dump of M-memory from WAGO 750-84x series coupler.</title>
+    <para>
+      Dump of M-memory from WAGO 750-84x series coupler.
+    </para>
+    <para>
+    {@example example_750841_Mmemory.php}
+    </para>
+  </refsect2>
+  <refsect2 id="{@id datatype}">
+    <title>Data conversion to PHP types.</title>
+    <para>
+      Conversion of the data bytes, received from Modbus, to a PHP type.
+    </para>
+    <para>
+    {@example example_datatype.php}
+    </para>
+  </refsect2>
+ </refsect1> 
+ <refsect1 id="{@id back_comp}">
+  <title>Back compatibility</title>
+  <para>
+   This version is back compatible to the last versions. Just use  
+   <programlisting role="c">
+      <![CDATA[require_once dirname(__FILE__) . '/Phpmodbus/ModbusMasterUdp.php';
+$modbus = new ModbusMasterUdp("192.168.1.1"); 
+// ... ]]>
+     </programlisting>
+  </para>
+ </refsect1>
+</refentry>
