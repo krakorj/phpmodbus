@@ -1,12 +1,12 @@
 <?php
 /**
- * Phpmodbus Copyright (c) 2004, 2010 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)
+ * Phpmodbus Copyright (c) 2004, 2013 Jan Krakora
  *
  * This source file is subject to the "PhpModbus license" that is bundled
  * with this package in the file license.txt.
  *
  * @author Jan Krakora
- * @copyright Copyright (c) 2004, 2010 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)
+ * @copyright Copyright (c) 2004, 2013 Jan Krakora
  * @license PhpModbus license
  * @category Phpmodbus
  * @package Phpmodbus
@@ -20,7 +20,7 @@
  * data types to a IEC data type.
  *
  * @author Jan Krakora
- * @copyright  Copyright (c) 2004, 2010 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)
+ * @copyright  Copyright (c) 2004, 2010 Jan Krakora
  * @package Phpmodbus
  */
 class IecType {
@@ -34,7 +34,7 @@ class IecType {
      * @return value IEC BYTE data type
      *
      */
-    function iecBYTE($value) {
+    public static function iecBYTE($value) {
         return chr($value & 0xFF);
     }
 
@@ -47,7 +47,7 @@ class IecType {
      * @return value IEC-1131 INT data type
      *
      */
-    function iecINT($value) {
+    public static function iecINT($value) {
         return self::iecBYTE(($value >> 8) & 0x00FF) .
                 self::iecBYTE(($value & 0x00FF));
     }
@@ -62,7 +62,7 @@ class IecType {
      * @return value IEC-1131 INT data type
      *
      */
-    function iecDINT($value, $endianness = 0) {
+    public static function iecDINT($value, $endianness = 0) {
         // result with right endianness
         return self::endianness($value, $endianness);
     }
@@ -76,7 +76,7 @@ class IecType {
      * @param value endianness defines endian codding (little endian == 0, big endian == 1)
      * @return value IEC-1131 REAL data type
      */
-    function iecREAL($value, $endianness = 0) {
+    public static function iecREAL($value, $endianness = 0) {
         // iecREAL representation
         $real = self::float2iecReal($value);
         // result with right endianness
@@ -95,7 +95,7 @@ class IecType {
      * @param float value to be converted
      * @return value IEC REAL data type
      */
-    private function float2iecReal($value) {
+    private static function float2iecReal($value) {
         // get float binary string
         $float = pack("f", $value);
         // set 32-bit unsigned integer of the float
@@ -113,7 +113,7 @@ class IecType {
      * @param bool $endianness
      * @return int
      */
-    private function endianness($value, $endianness = 0) {
+    private static function endianness($value, $endianness = 0) {
         if ($endianness == 0)
             return
                     self::iecBYTE(($value >> 8) & 0x000000FF) .
