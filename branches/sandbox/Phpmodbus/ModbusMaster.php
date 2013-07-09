@@ -1,12 +1,12 @@
 <?php
 /**
- * Phpmodbus Copyright (c) 2004, 2012 Jan Krakora
+ * Phpmodbus Copyright (c) 2004, 2013 Jan Krakora
  *  
  * This source file is subject to the "PhpModbus license" that is bundled
  * with this package in the file license.txt.
  *   
  *
- * @copyright  Copyright (c) 2004, 2012 Jan Krakora
+ * @copyright  Copyright (c) 2004, 2013 Jan Krakora
  * @license PhpModbus license 
  * @category Phpmodbus
  * @tutorial Phpmodbus.pkg 
@@ -27,13 +27,15 @@ require_once dirname(__FILE__) . '/PhpType.php';
  *   - FC  1: read coils
  *   - FC  2: read input discretes
  *   - FC  3: read multiple registers
+ *   - FC  4: read multiple input registers 
+ *   - FC  5: write single coil  
  *   - FC  6: write single register
  *   - FC 15: write multiple coils
  *   - FC 16: write multiple registers
  *   - FC 23: read write registers
  *   
  * @author Jan Krakora
- * @copyright  Copyright (c) 2004, 2012 Jan Krakora
+ * @copyright  Copyright (c) 2004, 2013 Jan Krakora
  * @package Phpmodbus  
  *
  */
