@@ -1,6 +1,9 @@
 #labels Featured
 = Release notes =
 
+==0.7 -> 0.8.r106==
+  * Added FC4, FC5 functionality
+
 ==0.6 -> 0.7.r100==
   * Fixed Issue 16
 
