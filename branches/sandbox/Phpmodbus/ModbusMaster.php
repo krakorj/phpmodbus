@@ -612,6 +612,108 @@ class ModbusMaster {
   }
   
   /**
+   * writeSingleCoil
+   *
+   * Modbus function FC5(0x05) - Write Single Register.
+   *
+   * This function writes {@link $data} single coil at {@link $reference} position of 
+   * memory of a Modbus device given by {@link $unitId}.
+   *
+   *
+   * @param int $unitId usually ID of Modbus device 
+   * @param int $reference Reference in the device memory (e.g. in device WAGO 750-841, memory MW0 starts at address 12288)
+   * @param array $data value to be written (TRUE|FALSE).
+   * @return bool Success flag
+   */       
+  function writeSingleCoil($unitId, $reference, $data){
+    $this->status .= "writeSingleCoil: START\n";
+    // connect
+    $this->connect();
+    // send FC5    
+    $packet = $this->writeSingleCoilPacketBuilder($unitId, $reference, $data);
+    $this->status .= $this->printPacket($packet);    
+    $this->send($packet);
+    // receive response
+    $rpacket = $this->rec();
+    $this->status .= $this->printPacket($rpacket);    
+    // parse packet
+    $this->writeSingleCoilParser($rpacket);
+    // disconnect
+    $this->disconnect();
+    $this->status .= "writeSingleCoil: DONE\n";
+    return true;
+  }
+
+
+  /**
+   * fc5
+   *
+   * Alias to {@link writeSingleCoil} method
+   *
+   * @param int $unitId
+   * @param int $reference
+   * @param array $data
+   * @param array $dataTypes
+   * @return bool
+   */
+  function fc5($unitId, $reference, $data, $dataTypes){    
+    return $this->writeSingleCoil($unitId, $reference, $data, $dataTypes);
+  }
+
+
+  /**
+   * writeSingleCoilPacketBuilder
+   *
+   * Packet builder FC5 - WRITE single register
+   *
+   * @param int $unitId
+   * @param int $reference
+   * @param array $data
+   * @param array $dataTypes
+   * @return string
+   */
+  private function writeSingleCoilPacketBuilder($unitId, $reference, $data){
+    $dataLen = 0;
+    // build data section
+    $buffer1 = "";
+    foreach($data as $key=>$dataitem) {
+      if($dataitem == TRUE){
+       $buffer1 = iecType::iecINT(0xFF00);
+      } else {
+       $buffer1 = iecType::iecINT(0x0000);
+      };
+    };
+    $dataLen += 2;
+    // build body
+    $buffer2 = "";
+    $buffer2 .= iecType::iecBYTE(5);             // FC5 = 5(0x05)
+    $buffer2 .= iecType::iecINT($reference);      // refnumber = 12288
+    $dataLen += 3;
+    // build header
+    $buffer3 = '';
+    $buffer3 .= iecType::iecINT(rand(0,65000));   // transaction ID    
+    $buffer3 .= iecType::iecINT(0);               // protocol ID    
+    $buffer3 .= iecType::iecINT($dataLen + 1);    // lenght    
+    $buffer3 .= iecType::iecBYTE($unitId);        //unit ID    
+    
+    // return packet string
+    return $buffer3. $buffer2. $buffer1;
+  }
+  
+  /**
+   * writeSingleCoilParser
+   *
+   * FC5 response parser
+   *
+   * @param string $packet
+   * @return bool
+   */
+  private function writeSingleCoilParser($packet){
+    $this->responseCode($packet);
+    return true;
+  }
+  
+  /**
    * writeSingleRegister
    *
    * Modbus function FC6(0x06) - Write Single Register.
