@@ -1,7 +1,9 @@
+[![PayPayl donate button](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=PCZY3Z2623XTU)
+
 # phpmodbus
 
-This project deals with an implementation of the basic functionality of the Modbus TCP and UDP based protocol using PHP. 
-This is the PHP Modbus library Google code follower at https://code.google.com/p/phpmodbus/
+Implementation of the basic functionality of the Modbus TCP and UDP based protocol using PHP. 
+This is the Google code project follower at https://code.google.com/p/phpmodbus/
 
 Implemented features:
  * Modbus master
@@ -15,9 +17,8 @@ Implemented features:
   * FC16 - Write multiple registers
   * FC23 - Read/Write multiple registers
 
-https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=PCZY3Z2623XTU https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif
-
 Example:
+
 ```php
 require_once dirname(__FILE__) . '/Phpmodbus/ModbusMaster.php'; 
 
