@@ -42,3 +42,7 @@ For more see [http://code.google.com/p/phpmodbus/downloads/list documentation] o
 
 Note: 
  * The PHP extension php_sockets.dll should be enabled (server php.ini file)
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/krakorj/phpmodbus/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
