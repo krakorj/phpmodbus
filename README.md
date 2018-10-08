@@ -1,6 +1,6 @@
-[![PayPayl donate button](https://img.shields.io/badge/paypal-donate-yellow.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=PCZY3Z2623XTU)
+[![PayPayl donate button](https://img.shields.io/badge/paypal-donate-yellow.svg)](http://paypal.me/krakorj)
 
-# phpmodbus
+# Phpmodbus
 
 Implementation of the basic functionality of the Modbus TCP and UDP based protocol using PHP. 
 This is the Google code project follower at https://code.google.com/p/phpmodbus/
@@ -42,7 +42,3 @@ For more see [http://code.google.com/p/phpmodbus/downloads/list documentation] o
 
 Note: 
  * The PHP extension php_sockets.dll should be enabled (server php.ini file)
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/krakorj/phpmodbus/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
