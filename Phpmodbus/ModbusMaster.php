@@ -4,8 +4,9 @@
  *  
  * This source file is subject to the "PhpModbus license" that is bundled
  * with this package in the file license.txt.
- *   
- *
+ * 
+ * Modified 2019 Sebastian Bäumler
+ * 
  * @copyright  Copyright (c) 2004, 2013 Jan Krakora
  * @license PhpModbus license 
  * @category Phpmodbus
@@ -41,6 +42,7 @@ require_once dirname(__FILE__) . '/PhpType.php';
  */
 class ModbusMaster {
   private $sock;
+  public $explicit = false;
   public $host = "192.168.1.1";
   public $port = "502";  
   public $client = "";
@@ -61,6 +63,7 @@ class ModbusMaster {
   function ModbusMaster($host, $protocol){
     $this->socket_protocol = $protocol;
     $this->host = $host;
+	$this->explicit = false;
   }
 
   /**
@@ -80,6 +83,12 @@ class ModbusMaster {
    * @return bool
    */
   private function connect(){
+    if($this->explicit == false){
+	   $this->connectInternal();
+	} 
+  }
+  
+  private function connectInternal(){
     // Create a protocol specific socket 
     if ($this->socket_protocol == "TCP"){ 
         // TCP socket
@@ -118,7 +127,14 @@ class ModbusMaster {
    *
    * Disconnect the socket
    */
-  private function disconnect(){    
+   
+   private function disconnect(){
+	    if($this->explicit == false){
+		   $this->disconnectInternal();
+		} 
+   }
+   
+  private function disconnectInternal(){    
     socket_close($this->sock);
     $this->status .= "Disconnected\n";
   }
@@ -209,6 +225,15 @@ class ModbusMaster {
     }    
   }
   
+  function connectExplicit(){
+	  $this->explicit = true;
+	  $this->connectInternal(); 	  
+  }
+ 
+  function disconnectExplicit(){
+	  $this->explicit = false;
+	  $this->disconnectInternal(); 
+  } 
   /**
    * readCoils
    * 
