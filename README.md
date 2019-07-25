@@ -1,3 +1,5 @@
+forked from krakorj/phpmodbus
+
 [![PayPayl donate button](https://img.shields.io/badge/paypal-donate-yellow.svg)](http://paypal.me/krakorj)
 
 # Phpmodbus
