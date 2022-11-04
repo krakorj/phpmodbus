@@ -54,7 +54,7 @@ class ModbusMaster {
    * @param String $host An IP address of a Modbus TCP device. E.g. "192.168.1.1"
    * @param String $protocol Socket protocol (TCP, UDP)   
    */         
-  function ModbusMaster($host, $protocol){
+  function __construct($host, $protocol){
     $this->socket_protocol = $protocol;
     $this->host = $host;
   }
